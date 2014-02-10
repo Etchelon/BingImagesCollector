@@ -35,6 +35,8 @@ Rectangle {
 			font.pixelSize: 20
 			wrapMode: Text.Wrap
 			color: "white"
+
+			visible: !listdelegate.GridView.view.isSliding
 		}
 	}
 }

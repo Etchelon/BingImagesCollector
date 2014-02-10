@@ -5,26 +5,41 @@ import Logic 1.0
 GridView {
 	id: gridview
 
-	cellWidth: width / settings.gridCellsPerPage
-	cellHeight: height / settings.gridCellsPerPage
+	property int animationTime: 1000
+	property bool still: !listview.isSliding
 
-	property int animationTime: 500
+	cellWidth: width / settings.gridCellsPerPage
+	Behavior on cellWidth {
+		enabled: !listview.isSliding
+		NumberAnimation { duration: gridview.animationTime; easing.type: Easing.InOutQuad }
+	}
+	cellHeight: (listview.isSliding ? height : width * 9 / 16) / settings.gridCellsPerPage
+	Behavior on cellHeight {
+		enabled: !listview.isSliding
+		NumberAnimation { duration: gridview.animationTime; easing.type: Easing.InOutQuad }
+	}
 
 	model: null
 	delegate: AllImagesGridDelegate { }
 
+	highlightRangeMode: GridView.StrictlyEnforceRange
 	snapMode: GridView.SnapToRow
 	visible: height > 1
 
 	// Transitions
+	property int transitionTime: 500
+	move: Transition {
+		NumberAnimation { properties: "x, y"; duration: gridview.transitionTime }
+	}
+
 	displaced: Transition {
-		NumberAnimation { properties: "x, y"; duration: 500 }
+		NumberAnimation { properties: "x, y"; duration: gridview.transitionTime }
 	}
 
 	remove: Transition {
 		ParallelAnimation {
-			NumberAnimation { property: "opacity"; to: 0; duration: 500 }
-			NumberAnimation { properties: "width, height"; to: 0; duration: 500 }
+			NumberAnimation { property: "opacity"; to: 0; duration: gridview.transitionTime }
+			NumberAnimation { properties: "width, height"; to: 0; duration: gridview.transitionTime }
 		}
 	}
 

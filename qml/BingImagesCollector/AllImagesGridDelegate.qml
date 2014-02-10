@@ -4,9 +4,11 @@ import Logic 1.0
 
 Flipable {
 	id: griddelegate
+	width: GridView.view.cellWidth
+	height: GridView.view.cellHeight
 
-	width: griddelegate.GridView.view.cellWidth
-	height: griddelegate.GridView.view.cellHeight
+	z: fullScreenTransition.running ? 100 : 0
+
 	property bool flipped: false
 
 	front: Item {
@@ -18,7 +20,7 @@ Flipable {
 			height: parent.height
 			Behavior on height {
 				id: heightBehavior
-				enabled: !listview.isSliding && image.state != "transitioning"
+				enabled: listview.isSliding && image.state != "fullScreen"
 				NumberAnimation { duration: griddelegate.GridView.view.animationTime; easing.type: Easing.InOutQuad }
 			}
 
@@ -37,15 +39,17 @@ Flipable {
 			GridViewIcon {
 				id: fullScreenButton
 				anchors {
-					right: parent.right
+					right: image.right
 					rightMargin: 10
-					top: parent.top
-					topMargin: 10
+					top: image.top
+					topMargin: 10 + (image.height - image.paintedHeight) / 2
 				}
 
 				scale: 0.9
 				source: image.state == "fullScreen" ? "exitfullscreen-icon.png" : "enterfullscreen-icon.png"
 				rotation: 90
+				visible: griddelegate.GridView.view.still
+
 				clickable.onClicked:
 				{
 					if (image.state != "fullScreen")
@@ -54,6 +58,33 @@ Flipable {
 						image.state = "";
 				}
 			}
+
+			states: [
+				State {
+					name: "fullScreen"
+					ParentChange {
+						target: image
+						parent: views
+						width: parent.width
+						height: parent.height
+						x: 0
+						y: 0
+					}
+				}
+			]
+
+			transitions: [
+				Transition {
+					id: fullScreenTransition
+					ParentAnimation {
+						NumberAnimation {
+							properties: "x, y, width, height"
+							duration: griddelegate.GridView.view.animationTime
+							easing.type: Easing.InQuad
+						}
+					}
+				}
+			]
 
 			Row {
 				id: buttons
@@ -65,7 +96,7 @@ Flipable {
 				}
 
 				spacing: 5
-				visible: image.state == ""
+				visible: griddelegate.GridView.view.still && image.state == ""
 
 				GridViewIcon {
 					scale: favorite ? 1.0 : 0.8
@@ -97,41 +128,6 @@ Flipable {
 					clickable.onClicked: griddelegate.GridView.view.confirm_deletion(index);
 				}
 			}
-
-			states: [
-				State {
-					name: "fullScreen"
-					ParentChange {
-						target: image
-						parent: views
-						width: parent.width
-						height: parent.height
-						x: 0
-						y: 0
-					}
-
-					PropertyChanges {
-						target: image
-						width: views.width
-						height: views.height
-					}
-				},
-				State {
-					name: "transitioning"
-					when: parentAnimation.running
-					PropertyChanges {
-						target: image
-						z: 1000
-					}
-				}
-			]
-
-			transitions: Transition {
-				ParentAnimation {
-					id: parentAnimation
-					NumberAnimation { properties: "x, y, width, height"; duration: 500; easing.type: Easing.InQuad  }
-				}
-			}
 		}
 	}
 
@@ -152,7 +148,7 @@ Flipable {
 			}
 
 			text: copyright
-			wrapMode: Text.Wrap
+			wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 			font.pixelSize: 28
 			color: "white"
 		}

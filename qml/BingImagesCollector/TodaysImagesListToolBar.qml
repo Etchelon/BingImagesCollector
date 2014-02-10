@@ -34,8 +34,8 @@ ToolBar {
 		onTriggered:
 		{
 			var index = listview.currentIndex;
-			shift_currentIndex(index);
 			imageLoader.keep_image(index);
+			shift_currentIndex(index);
 		}
 	}
 
@@ -64,8 +64,7 @@ ToolBar {
 		onTriggered:
 		{
 			var index = listview.currentIndex;
-			var image = imageLoader.todaysImages.get(index);
-			imageLoader.set_as_wallpaper(image);
+			imageLoader.todaysImages.get(index).set_as_wallpaper();
 		}
 	}
 

@@ -80,7 +80,7 @@ ApplicationWindow {
 	}
 
 	// Main content
-	color: background.visible ? "black" : "white"
+	color: "black"
 	Image {
 		id: background
 
@@ -120,7 +120,7 @@ ApplicationWindow {
 	StatusBar {
 		id: statusBar
 
-		height: messageBar.text == "" ? 0 : toolBar.height
+		height: messageBar.text == "" ? 0 : toolbars.height
 		width: parent.width
 		anchors.bottom: parent.bottom
 
@@ -151,9 +151,9 @@ ApplicationWindow {
 
 			text: ""
 
-			Behavior on height {
-				NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
-			}
+//			Behavior on height {
+//				NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
+//			}
 		}
 
 		Button {

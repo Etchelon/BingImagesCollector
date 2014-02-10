@@ -9,29 +9,29 @@ GridView {
 	cellWidth: width
 	cellHeight: height
 
-	property int animationTime: 750
+	property int animationTime: 1000
 
 	height: isOpen ? parent.height : 0
 	Behavior on height {
-		NumberAnimation { duration: listview.animationTime; easing.type: Easing.InOutCubic }
+		NumberAnimation {
+			id: anim
+			duration: listview.animationTime
+			easing.type: Easing.InOutCubic
+		}
 	}
 
 	visible: height > 1
 	property bool isOpen: false
-	property bool isSliding: false
+	property bool isSliding: anim.running
 
 	function open()
 	{
 		isOpen = true;
-		isSliding = true;
-		slideTimer.start();
 	}
 	function close()
 	{
 		currentIndex = 0;
 		isOpen = false;
-		isSliding = true;
-		slideTimer.start();
 	}
 
 	model: null
@@ -52,14 +52,5 @@ GridView {
 			NumberAnimation { property: "opacity"; to: 0; duration: transitionTime }
 			NumberAnimation { properties: "width, height"; to: 0; duration: transitionTime }
 		}
-	}
-
-	Timer {
-		id: slideTimer
-		repeat: false
-		interval: listview.animationTime
-		triggeredOnStart: false
-
-		onTriggered: isSliding = false;
 	}
 }
