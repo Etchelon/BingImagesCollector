@@ -49,8 +49,24 @@ ToolBar {
 		onTriggered:
 		{
 			var index = listview.currentIndex;
-			shift_currentIndex(index);
 			imageLoader.todaysImages.remove(index, true);
+			shift_currentIndex(index);
+		}
+	}
+
+	Action {
+		id: makeFavoriteAction
+
+		iconSource: "favorite2-icon.png"
+		iconName: "fav-image"
+		text: qsTr("&Add to favorites")
+		tooltip: qsTr("Add this image to your favorites")
+		onTriggered:
+		{
+			var index = listview.currentIndex;
+			imageLoader.todaysImages.get(index).set_favorite(true);
+			imageLoader.keep_image(index);
+			shift_currentIndex(index);
 		}
 	}
 
@@ -85,6 +101,13 @@ ToolBar {
 
 			action: discardImageAction
 		}
+
+//		ToolButton {
+//			id: makeFavoriteButton
+//			height: parent.height
+
+//			action: makeFavoriteAction
+//		}
 
 		ToolButton {
 			id: setWallpaperButton

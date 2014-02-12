@@ -31,13 +31,11 @@ public:
 	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
 
 	// My own APIs
-public:
-	int count() const;
-
 Q_SIGNALS:
 	void countChanged();
 
 public Q_SLOTS:
+	int count() const;
 	bool insert(int i, BingImage* newImage);
 	bool remove(int i, bool alsoDelete = false);
 	BingImage* get(int i);

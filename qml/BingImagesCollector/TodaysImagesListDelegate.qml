@@ -23,6 +23,7 @@ Rectangle {
 		height: parent.height / 10
 
 		color: "black"
+		visible: height > 1
 
 		Text {
 			anchors {
@@ -33,10 +34,10 @@ Rectangle {
 
 			text: copyright
 			font.pixelSize: 20
-			wrapMode: Text.Wrap
+			elide: Text.ElideRight
 			color: "white"
 
-			visible: !listdelegate.GridView.view.isSliding
+			visible: !listdelegate.GridView.view.isSliding && caption.visible
 		}
 	}
 }

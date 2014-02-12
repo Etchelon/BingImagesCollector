@@ -99,6 +99,8 @@ ApplicationWindow {
 		anchors.bottom: parent.bottom
 		width: parent.width
 
+		property bool fullScreenMode: false
+
 		AllImagesGrid {
 			id: gridview
 
@@ -107,6 +109,7 @@ ApplicationWindow {
 			width: parent.width
 
 			model: imageLoader.allImages
+			visible: !views.fullScreenMode
 		}
 
 		TodaysImagesList {

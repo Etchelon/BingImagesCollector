@@ -18,20 +18,14 @@ Flipable {
 			id: image
 			width: parent.width
 			height: parent.height
-			Behavior on height {
-				id: heightBehavior
-				enabled: listview.isSliding && image.state != "fullScreen"
-				NumberAnimation { duration: griddelegate.GridView.view.animationTime; easing.type: Easing.InOutQuad }
-			}
 
 			scale: status == Image.Ready ? 1 : 0
 			Behavior on scale {
 				NumberAnimation { duration: griddelegate.GridView.view.animationTime; easing.type: Easing.InOutQuad }
 			}
 
-			property bool ready: height == parent.height
+			fillMode: Image.PreserveAspectFit
 
-			fillMode: ready ? Image.PreserveAspectFit : Image.Stretch
 			asynchronous: true
 
 			source: "file:///" + path
@@ -50,13 +44,7 @@ Flipable {
 				rotation: 90
 				visible: griddelegate.GridView.view.still
 
-				clickable.onClicked:
-				{
-					if (image.state != "fullScreen")
-						image.state = "fullScreen";
-					else
-						image.state = "";
-				}
+				clickable.onClicked: image.state = image.state == "" ? "fullScreen" : "";
 			}
 
 			states: [
@@ -69,6 +57,11 @@ Flipable {
 						height: parent.height
 						x: 0
 						y: 0
+					}
+
+					PropertyChanges {
+						target: views
+						fullScreenMode: true && !fullScreenTransition.running
 					}
 				}
 			]
@@ -96,7 +89,7 @@ Flipable {
 				}
 
 				spacing: 5
-				visible: griddelegate.GridView.view.still && image.state == ""
+				visible: griddelegate.GridView.view.still && !fullScreenTransition.running && image.state == ""
 
 				GridViewIcon {
 					scale: favorite ? 1.0 : 0.8
@@ -133,7 +126,6 @@ Flipable {
 
 	back: Rectangle {
 		id: info
-
 		anchors.fill: parent
 		color: "black"
 
@@ -149,7 +141,7 @@ Flipable {
 
 			text: copyright
 			wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-			font.pixelSize: 28
+			font.pixelSize: 24
 			color: "white"
 		}
 
@@ -164,6 +156,7 @@ Flipable {
 			source: "undo-icon.png"
 			opacity: 1
 			clickable.onClicked: griddelegate.flipped = false;
+			clickable.preventStealing: true
 		}
 	}
 
@@ -210,7 +203,7 @@ Flipable {
 
 		angle: 0
 		Behavior on angle {
-			NumberAnimation { duration: 1000; easing.type: Easing.InOutBack }
+			NumberAnimation { duration: griddelegate.GridView.view.transitionTime; easing.type: Easing.InOutBack }
 		}
 	}
 

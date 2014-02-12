@@ -28,9 +28,6 @@ GridView {
 
 	// Transitions
 	property int transitionTime: 500
-	move: Transition {
-		NumberAnimation { properties: "x, y"; duration: gridview.transitionTime }
-	}
 
 	displaced: Transition {
 		NumberAnimation { properties: "x, y"; duration: gridview.transitionTime }

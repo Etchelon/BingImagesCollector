@@ -28,6 +28,22 @@ ToolBar {
 		anchors.left: parent.left
 
 		ToolButton {
+			id: openListButton
+			height: parent.height
+
+			iconSource: "arrowup-icon.png"
+			tooltip: qsTr("Open the list of today's images")
+
+			onClicked:
+			{
+				if (listview.model != null)
+					listview.open();
+				else
+					imageLoader.load_images(true);
+			}
+		}
+
+		ToolButton {
 			id: downloadImagesButton
 			height: parent.height
 
@@ -42,13 +58,7 @@ ToolBar {
 
 			iconSource: settings.gridCellsPerPage == 3 ? "grid-2by2.png" : "grid-3by3.png"
 			tooltip: settings.gridCellsPerPage == 3 ? qsTr("2x2 grid") : qsTr("3x3 grid")
-			onClicked:
-			{
-				if (settings.gridCellsPerPage == 3)
-					settings.gridCellsPerPage = 2;
-				else
-					settings.gridCellsPerPage = 3;
-			}
+			onClicked: settings.gridCellsPerPage = settings.gridCellsPerPage == 3 ? 2 : 3;
 		}
 	}
 

@@ -43,6 +43,7 @@ GridView {
 
 	// Transitions
 	property int transitionTime: 500
+
 	displaced: Transition {
 		NumberAnimation { properties: "x, y"; duration: transitionTime }
 	}
