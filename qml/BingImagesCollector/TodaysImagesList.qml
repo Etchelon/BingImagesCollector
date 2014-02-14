@@ -30,7 +30,6 @@ GridView {
 	}
 	function close()
 	{
-		currentIndex = 0;
 		isOpen = false;
 	}
 

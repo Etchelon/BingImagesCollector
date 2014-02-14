@@ -7,6 +7,7 @@ Rectangle {
 	height: GridView.view.cellHeight
 
 	color: "black"
+	visible: GridView.isCurrentItem
 
 	Image {
 		id: img
@@ -34,7 +35,7 @@ Rectangle {
 
 			text: copyright
 			font.pixelSize: 20
-			elide: Text.ElideRight
+			renderType: Text.NativeRendering
 			color: "white"
 
 			visible: !listdelegate.GridView.view.isSliding && caption.visible

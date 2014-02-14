@@ -142,6 +142,7 @@ Flipable {
 			text: copyright
 			wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 			font.pixelSize: 24
+			renderType: Text.NativeRendering
 			color: "white"
 		}
 
@@ -203,7 +204,7 @@ Flipable {
 
 		angle: 0
 		Behavior on angle {
-			NumberAnimation { duration: griddelegate.GridView.view.transitionTime; easing.type: Easing.InOutBack }
+			NumberAnimation { duration: griddelegate.GridView.view.animationTime; easing.type: Easing.InOutBack }
 		}
 	}
 
