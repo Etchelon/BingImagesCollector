@@ -16,10 +16,20 @@ ApplicationWindow {
 
 		onDownloadFinished:
 		{
-			listview.model = imageLoader.todaysImages
-			listview.open();
+			listview.model = imageLoader.todaysImages;
+			timer.start();
 		}
+
 		onProblems: messageBar.push_error_message(message);
+	}
+
+	Timer {
+		id: timer
+
+		interval: 250
+		repeat: false
+		triggeredOnStart: false
+		onTriggered: listview.open();
 	}
 
 	title: qsTr("Bing Images Collector! - ") + (listview.isOpen ? qsTr("Today's images") : qsTr("Your collection"))
@@ -109,7 +119,7 @@ ApplicationWindow {
 			width: parent.width
 
 			model: imageLoader.allImages
-			visible: !views.fullScreenMode
+			visible: height > 1 && !views.fullScreenMode
 		}
 
 		TodaysImagesList {
@@ -117,6 +127,7 @@ ApplicationWindow {
 
 			anchors.bottom: parent.bottom
 			width: parent.width
+			visible: height > 1
 		}
 	}
 
@@ -134,6 +145,12 @@ ApplicationWindow {
 			function push_error_message(message)
 			{
 				var count = errorMessages.length;
+				// Append this message only if it's not a duplicate
+				for (var i = 0; i < count; ++i)
+				{
+					if (errorMessages[i] == message)
+						return;
+				}
 
 				errorMessages.push(message);
 				if (count == 0)
@@ -153,10 +170,6 @@ ApplicationWindow {
 			anchors.leftMargin: 10
 
 			text: ""
-
-//			Behavior on height {
-//				NumberAnimation { duration: 500; easing.type: Easing.InOutQuad }
-//			}
 		}
 
 		Button {

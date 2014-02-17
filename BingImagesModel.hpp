@@ -16,7 +16,8 @@ public:
 		DateRole,
 		PathRole,
 		CopyrightRole,
-		FavoriteRole
+		FavoriteRole,
+		DuplicateRole
 	};
 
 	QHash<int, QByteArray> roleNames() const;

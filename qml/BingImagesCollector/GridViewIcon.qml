@@ -15,6 +15,6 @@ Image {
 	MouseArea {
 		id: mouseArea
 		anchors.fill: parent
-		hoverEnabled: true
+		hoverEnabled: image.scale == 1 ? true : false
 	}
 }

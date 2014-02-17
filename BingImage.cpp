@@ -17,8 +17,8 @@ BingImage::BingImage(QString m)
 	m_market = m;
 }
 
-BingImage::BingImage(QString m, QDateTime d, QString p, QString c)
-	: m_market{ m }, m_date{ d }, m_filePath{ p }, m_copyright{ c }
+BingImage::BingImage(QString m, QDateTime d, QString p, QString c, bool f, QString h)
+	: m_market{ m }, m_date{ d }, m_filePath{ p }, m_copyright{ c }, m_favorite{ f }, m_hash{ h }
 {
 }
 
@@ -57,6 +57,16 @@ bool BingImage::favorite() const
 	return m_favorite;
 }
 
+QString BingImage::hash() const
+{
+	return m_hash;
+}
+
+bool BingImage::duplicate() const
+{
+	return m_duplicate;
+}
+
 void BingImage::set_date(QDateTime d)
 {
 	if (m_date != d)
@@ -81,6 +91,22 @@ void BingImage::set_copyright(QString c)
 	{
 		m_copyright = c;
 		emit copyrightChanged();
+	}
+}
+
+void BingImage::set_hash(QString h)
+{
+	if (m_hash != h)
+	{
+		m_hash = h;
+	}
+}
+
+void BingImage::set_duplicate(bool d)
+{
+	if (m_duplicate != d)
+	{
+		m_duplicate = d;
 	}
 }
 
@@ -165,6 +191,12 @@ void BingImage::load_from_xml(QXmlStreamReader& reader)
 			else if (reader.isStartElement() && reader.name() == "Favorite")
 				m_favorite = static_cast<bool>(reader.readElementText().toInt());
 
+			else if (reader.isStartElement() && reader.name() == "Duplicate")
+				m_duplicate = static_cast<bool>(reader.readElementText().toInt());
+
+			else if (reader.isStartElement() && reader.name() == "Md5Sum")
+				m_hash = reader.readElementText();
+
 			else if (reader.isEndElement() && reader.name() == "Image")
 				return;
 
@@ -206,6 +238,14 @@ void BingImage::save_to_xml(QXmlStreamWriter& writer) const
 		writer.writeStartElement("Favorite");
 		writer.writeCharacters(QString::number(static_cast<int>(m_favorite)));
 		writer.writeEndElement();				// Favorite
+
+		writer.writeStartElement("Duplicate");
+		writer.writeCharacters(QString::number(static_cast<int>(m_duplicate)));
+		writer.writeEndElement();				// Duplicate
+
+		writer.writeStartElement("Md5Sum");
+		writer.writeCharacters(m_hash);
+		writer.writeEndElement();				// Hash
 
 		writer.writeEndElement();				// Image
 	}

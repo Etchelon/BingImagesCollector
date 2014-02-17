@@ -1,5 +1,6 @@
 #include "ImageLoader.hpp"
 
+#include <QCryptographicHash>
 #include <QImage>
 #include <QPainter>
 #include <QDir>
@@ -23,6 +24,9 @@ ImageLoader::ImageLoader(QObject* parent)
 	try
 	{
 		load_images_from_database();
+
+		for (const BingImage* image : *m_allImages)
+			m_hashCodes.push_back(image->hash());
 	}
 	catch (const std::exception& ex)
 	{
@@ -241,7 +245,7 @@ void ImageLoader::download_images()
 		connect(image, SIGNAL(problems(QString)), this, SIGNAL(problems(QString)));
 		m_todaysImages->append(image);
 
-		QUrl url{ requestUrl + mkt };
+		QUrl url{ m_requestUrl + mkt };
 		QNetworkRequest request{ url };
 		m_xml_manager.get(request);
 	}
@@ -319,19 +323,20 @@ void ImageLoader::image_ready(QNetworkReply* imageReply)
 	// Get the market for the current image
 	QString mkt = imageReply->url().url().right(5);
 
+	// Build the file name for this image
 	QString fileName = SettingsHandler::TempImagesFolder
 					   + mkt + "_"
 					   + QDateTime::currentDateTime().date().toString("yyyy-MM-dd")
 					   + ".jpg";
 
 	// Get the image and save it to disk
-	QImage image;
-	image.loadFromData(imageReply->readAll());
+	QByteArray bits = imageReply->readAll();
+	QImage image = QImage::fromData(bits);
 
 	if (m_settings->embedLogo())
 	{
 		// Get the bing logo scaled to fit the downloaded image's size properly
-		QImage scaledLogo = QImage{ bingLogo }.scaledToHeight(image.height() / 8.5, Qt::SmoothTransformation);
+		QImage scaledLogo = QImage{ m_bingLogo }.scaledToHeight(image.height() / 8.5, Qt::SmoothTransformation);
 
 		// Embed the logo into the downloaded image
 		QPainter painter{ &image };
@@ -349,8 +354,16 @@ void ImageLoader::image_ready(QNetworkReply* imageReply)
 			return img->market() == mkt;
 		});
 
-		if (bingImage !=  m_todaysImages->cend())
+		if (bingImage != m_todaysImages->cend())
+		{
 			(*bingImage)->set_filePath(fileName);
+
+			// Calculate the md5 sum and check for duplicates
+			QString md5sum = QString{ QCryptographicHash::hash(bits, QCryptographicHash::Md5).toHex() };
+			(*bingImage)->set_hash(md5sum);
+			(*bingImage)->set_duplicate(std::find(std::begin(m_hashCodes), std::end(m_hashCodes), md5sum) != std::end(m_hashCodes));
+//			qDebug() << "md5sum for market " << mkt << ": " << md5sum << "; is duplicate: " << (*bingImage)->duplicate() << endl;
+		}
 	}
 
 	// Schedule the network reply for deletion
@@ -367,19 +380,24 @@ void ImageLoader::keep_image(int i)
 	BingImage* image = m_todaysImages->get(i);
 
 	QString path = image->filePath();
-	QStringRef fileNameNoPath(&path, path.length() - 20, 20);
+	QStringRef fileNameNoPath(&path, path.length() - 20, 16);
 	QStringRef currentFolder(&path, 0, path.length() - 20);
 
 	if (currentFolder == SettingsHandler::TempImagesFolder)
 	{
-		QString normalPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString();
-		if (!QFile::rename(path, normalPath))
+		QString destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + ".jpg";
+
+		int n = 0;
+		while (QFile::exists(destinationPath))
+			destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + "_" + QString::number(n++) + ".jpg";
+
+		if (!QFile::rename(path, destinationPath))
 		{
 			emit problems("Could not move the image to the main folder! It will be removed upon quitting the program if you don't manually move it");
 			return;
 		}
 
-		image->set_filePath(normalPath);
+		image->set_filePath(destinationPath);
 		m_todaysImages->remove(i);
 		m_allImages->prepend(image);
 	}

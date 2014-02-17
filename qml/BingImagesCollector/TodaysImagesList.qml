@@ -20,7 +20,6 @@ GridView {
 		}
 	}
 
-	visible: height > 1
 	property bool isOpen: false
 	property bool isSliding: anim.running
 
@@ -43,7 +42,7 @@ GridView {
 	// Transitions
 	property int transitionTime: 500
 
-	displaced: Transition {
+	removeDisplaced: Transition {
 		NumberAnimation { properties: "x, y"; duration: transitionTime }
 	}
 

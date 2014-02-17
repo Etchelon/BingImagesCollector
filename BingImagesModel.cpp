@@ -14,6 +14,7 @@ BingImagesModel::BingImagesModel(QObject* parent)
 		m_roles.insert(PathRole, "path");
 		m_roles.insert(CopyrightRole, "copyright");
 		m_roles.insert(FavoriteRole, "favorite");
+		m_roles.insert(DuplicateRole, "duplicate");
 	}
 }
 
@@ -57,6 +58,9 @@ QVariant BingImagesModel::data(const QModelIndex& index, int role) const
 
 		case FavoriteRole:
 			return m_images[i]->favorite();
+
+		case DuplicateRole:
+			return m_images[i]->duplicate();
 		}
 	}
 
@@ -167,6 +171,9 @@ bool BingImagesModel::append(BingImage* newImage)
 
 void BingImagesModel::clear(bool alsoDelete)
 {
+	if (count() == 0)
+		return;
+
 	beginRemoveRows(QModelIndex{ }, 0, count() - 1);
 
 	for (BingImage* image : m_images)

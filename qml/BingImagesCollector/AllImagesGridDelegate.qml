@@ -72,7 +72,7 @@ Flipable {
 					ParentAnimation {
 						NumberAnimation {
 							properties: "x, y, width, height"
-							duration: griddelegate.GridView.view.animationTime
+							duration: griddelegate.GridView.view.transitionTime
 							easing.type: Easing.InQuad
 						}
 					}

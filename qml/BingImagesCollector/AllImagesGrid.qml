@@ -24,7 +24,6 @@ GridView {
 
 	highlightRangeMode: GridView.StrictlyEnforceRange
 	snapMode: GridView.SnapToRow
-	visible: height > 1
 
 	// Transitions
 	property int transitionTime: 500

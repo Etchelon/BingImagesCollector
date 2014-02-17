@@ -19,6 +19,7 @@ class BingImage : public QObject
 	Q_PROPERTY(QUrl path READ path NOTIFY pathChanged)
 	Q_PROPERTY(QString copyright READ copyright NOTIFY copyrightChanged)
 	Q_PROPERTY(bool favorite READ favorite WRITE set_favorite NOTIFY favoriteChanged)
+	Q_PROPERTY(bool duplicate READ duplicate NOTIFY duplicateChanged)
 
 private:
 	// Flag to know if the image is usable
@@ -27,11 +28,13 @@ private:
 	QString m_filePath;
 	QString m_copyright;
 	bool m_favorite = false;
+	QString m_hash;
+	bool m_duplicate = false;
 
 public:
 	explicit BingImage(QObject* parent = nullptr);
 	explicit BingImage(QString m);
-	BingImage(QString m, QDateTime d, QString p, QString c);
+	BingImage(QString m, QDateTime d, QString p, QString c, bool f, QString h);
 
 public:
 	// Getters
@@ -42,10 +45,14 @@ public:
 	QUrl path() const;
 	QString copyright() const;
 	bool favorite() const;
+	QString hash() const;
+	bool duplicate() const;
 
 	// Setters
 	void set_filePath(QString p);
 	void set_copyright(QString c);
+	void set_hash(QString h);
+	void set_duplicate(bool d);
 
 public Q_SLOTS:
 	void set_favorite(bool b);
@@ -61,6 +68,7 @@ Q_SIGNALS:
 	void pathChanged();
 	void copyrightChanged();
 	void favoriteChanged();
+	void duplicateChanged();
 
 	void problems(QString message);
 

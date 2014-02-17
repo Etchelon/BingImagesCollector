@@ -1,5 +1,6 @@
 #include "qtquick2controlsapplicationviewer.h"
 #include <QtQml/qqml.h>
+#include <QIcon>
 
 #include "SettingsHandler.hpp"
 #include "BingImage.hpp"
@@ -14,6 +15,9 @@ int main(int argc, char *argv[])
 	qmlRegisterType<ImageLoader>("Logic", 1, 0, "ImageLoader");
 
 	Application app(argc, argv);
+	app.setApplicationDisplayName("Bing Images Collector!");
+	app.setApplicationVersion("0.5");
+	app.setWindowIcon(QIcon{ "BingImagesCollector.ico" });
 
 	QtQuick2ControlsApplicationViewer viewer;
 	viewer.setMainQmlFile(QStringLiteral("qml/BingImagesCollector/main.qml"));

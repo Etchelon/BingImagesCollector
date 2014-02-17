@@ -19,14 +19,15 @@ class ImageLoader : public QObject
 	Q_PROPERTY(double downloadProgress READ downloadProgress NOTIFY downloadProgressChanged)
 
 	// Members
-	const QString requestUrl = "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=";
-	const QString bingLogo = "qml/BingImagesCollector/bing_new_logo.png";
+	const QString m_requestUrl = "http://www.bing.com/HPImageArchive.aspx?format=xml&idx=0&n=1&mkt=";
+	const QString m_bingLogo = "qml/BingImagesCollector/bing_new_logo.png";
 	QNetworkAccessManager m_xml_manager;
 	QNetworkAccessManager m_image_manager;
+	QStringList m_hashCodes;
 
-	SettingsHandler* m_settings = new SettingsHandler(this);
-	BingImagesModel* m_todaysImages = new BingImagesModel(this);
-	BingImagesModel* m_allImages = new BingImagesModel(this);
+	SettingsHandler* m_settings = new SettingsHandler{ this };
+	BingImagesModel* m_todaysImages = new BingImagesModel{ this };
+	BingImagesModel* m_allImages = new BingImagesModel{ this };
 	bool m_downloading = false;
 	int m_downloadProgress = 0;
 
