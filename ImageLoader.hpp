@@ -3,7 +3,6 @@
 
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QQmlListProperty>
 #include "SettingsHandler.hpp"
 #include "BingImage.hpp"
 #include "BingImagesModel.hpp"

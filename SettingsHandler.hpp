@@ -14,6 +14,7 @@ class SettingsHandler : public QObject
 	Q_PROPERTY(bool embedLogo READ embedLogo WRITE set_embedLogo NOTIFY embedLogoChanged)
 	Q_PROPERTY(QString resolution READ resolution WRITE set_resolution NOTIFY resolutionChanged)
 	Q_PROPERTY(int gridCellsPerPage READ gridCellsPerPage WRITE set_gridCellsPerPage NOTIFY gridCellsPerPageChanged)
+	Q_PROPERTY(bool showOnlyNewImages READ showOnlyNewImages WRITE set_showOnlyNewImages NOTIFY showOnlyNewImagesChanged)
 
 private:
 	// Members
@@ -22,9 +23,11 @@ private:
 	bool m_embedLogo = false;
 	QDateTime m_lastDownload;
 	int m_gridCellsPerPage = 3;
+	bool m_showOnlyNewImages = false;
 
 public:
 	// Global paths for the application
+	static const QString ImageExtension;
 	static const QString AppFolder;
 	static const QString TempImagesFolder;
 	static const QString FavoriteFolder;
@@ -45,17 +48,20 @@ public:
 	QString resolution() const;
 	QDateTime lastDownload() const;
 	int gridCellsPerPage() const;
+	bool showOnlyNewImages() const;
 
 	// Setters
 	void set_embedLogo(bool b);
 	void set_resolution(QString res);
 	void set_lastDownload(QDateTime ld);
 	void set_gridCellsPerPage(int c);
+	void set_showOnlyNewImages(bool b);
 
 Q_SIGNALS:
 	void embedLogoChanged();
 	void resolutionChanged();
 	void gridCellsPerPageChanged();
+	void showOnlyNewImagesChanged();
 
 public Q_SLOTS:
 	void save_settings() const;

@@ -114,12 +114,18 @@ void BingImage::set_favorite(bool isFavorite)
 {
 	if (m_favorite != isFavorite)
 	{
-		QString fileNameNoPath = m_filePath.right(20);
+		int len = m_filePath.length() - (m_filePath.lastIndexOf('/') + 1);
+		QString fileNameNoPath = m_filePath.right(len).left(len - SettingsHandler::ImageExtension.length());
 
 		// Image has become favorite: move to the fav folder
 		if (isFavorite)
 		{
-			QString favPath = SettingsHandler::FavoriteFolder + fileNameNoPath;
+			QString favPath = SettingsHandler::FavoriteFolder + fileNameNoPath + SettingsHandler::ImageExtension;
+
+			int n = 0;
+			while (QFile::exists(favPath))
+				favPath = SettingsHandler::FavoriteFolder + fileNameNoPath + "_" + QString::number(n++) + SettingsHandler::ImageExtension;
+
 			if (!QFile::rename(m_filePath, favPath))
 			{
 				emit problems("Couldn't move the image to the favorite folder!");
@@ -131,7 +137,12 @@ void BingImage::set_favorite(bool isFavorite)
 		// Image was removed from favorites: move to the images folder
 		else
 		{
-			QString normalPath = SettingsHandler::ImagesFolder + fileNameNoPath;
+			QString normalPath = SettingsHandler::ImagesFolder + fileNameNoPath + SettingsHandler::ImageExtension;
+
+			int n = 0;
+			while (QFile::exists(normalPath))
+				normalPath = SettingsHandler::ImagesFolder + fileNameNoPath + "_" + QString::number(n++) + SettingsHandler::ImageExtension;
+
 			if (!QFile::rename(m_filePath, normalPath))
 			{
 				emit problems("Couldn't move the image to the main folder! Image is still in the favorite folder");

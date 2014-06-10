@@ -39,6 +39,7 @@ public Q_SLOTS:
 	int count() const;
 	bool insert(int i, BingImage* newImage);
 	bool remove(int i, bool alsoDelete = false);
+	bool remove(BingImage* image, bool alsoDelete = false);
 	BingImage* get(int i);
 	bool prepend(BingImage* newImage);
 	bool append(BingImage* newImage);

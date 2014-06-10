@@ -3,11 +3,11 @@ import Logic 1.0
 
 Rectangle {
 	id: listdelegate
-	width: GridView.view.cellWidth
-	height: GridView.view.cellHeight
+	width: GridView.view.width
+	height: GridView.view.height
+	visible: GridView.isCurrentItem
 
 	color: "black"
-	visible: GridView.isCurrentItem
 
 	Image {
 		id: img
@@ -43,16 +43,16 @@ Rectangle {
 	}
 
 	Rectangle {
-		width: text.implicitWidth + 50
+		width: text.implicitWidth + 30
 		height: text.implicitHeight + 6
 		anchors.top: parent.top
 		anchors.topMargin: width * Math.sin(Math.PI * rotation/180) / 2 + 5
 		anchors.right: parent.right
-		anchors.rightMargin: 0 //height * Math.sin(Math.PI * rotation/180) / 2
+		anchors.rightMargin: 0
 		rotation: 30
 
 		border {
-			color: "green"
+			color: "red"
 			width: 2
 		}
 		color: "yellow"
@@ -66,6 +66,7 @@ Rectangle {
 			text: qsTr("Already in collection!")
 			font.pixelSize: 20
 			style: Text.Sunken
+			color: "red"
 		}
 
 		visible: duplicate

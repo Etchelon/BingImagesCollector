@@ -5,7 +5,7 @@ import Logic 1.0
 GridView {
 	id: gridview
 
-	property int animationTime: 1000
+	property int animationTime: 750
 	property bool still: !listview.isSliding
 
 	cellWidth: width / settings.gridCellsPerPage
@@ -22,6 +22,7 @@ GridView {
 	model: null
 	delegate: AllImagesGridDelegate { }
 
+	cacheBuffer: 1000
 	highlightRangeMode: GridView.StrictlyEnforceRange
 	snapMode: GridView.SnapToRow
 

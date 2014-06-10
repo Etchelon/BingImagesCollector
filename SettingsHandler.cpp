@@ -6,6 +6,7 @@
 #include <QVector>
 
 // Global paths for the application
+const QString SettingsHandler::ImageExtension = ".jpg";
 const QString SettingsHandler::AppFolder = QDir::homePath() + "/AppData/Local/BingImagesCollector/";
 const QString SettingsHandler::TempImagesFolder = AppFolder + "temp/";
 const QString SettingsHandler::FavoriteFolder = AppFolder + "favorite/";
@@ -29,6 +30,9 @@ SettingsHandler::SettingsHandler(QObject* parent)
 	if (!path.exists("images/"))
 		path.mkdir("images/");
 
+	if (!path.exists("favorite/"))
+		path.mkdir("favorite/");
+
 	// Settings file
 	QFile settingsFile{ SettingsFile };
 
@@ -38,7 +42,7 @@ SettingsHandler::SettingsHandler(QObject* parent)
 		settingsFile.open(QIODevice::WriteOnly);
 
 		QTextStream os{ &settingsFile };
-		os << "width: 1920; height: 1080; add logo: 1; cells per page: 3; lastDownload_ mer gen 22 22:34:17 2014 GMT";
+		os << "width: 1920; height: 1080; add logo: 1; cells per page: 3; show only new images: 1; lastDownload_ mer gen 22 22:34:17 2014 GMT";
 
 		settingsFile.close();
 	}
@@ -55,7 +59,8 @@ SettingsHandler::SettingsHandler(QObject* parent)
 		m_imagesHeight = settings[1].split(":")[1].toInt();
 		m_embedLogo    = static_cast<bool>(settings[2].split(":")[1].toInt());
 		m_gridCellsPerPage = settings[3].split(":")[1].toInt();
-		m_lastDownload = QDateTime::fromString(settings[4].split("_")[1]/*, "yyyy-MM-dd_HH-mm"*/);
+		m_showOnlyNewImages = static_cast<bool>(settings[4].split(":")[1].toInt());
+		m_lastDownload = QDateTime::fromString(settings[5].split("_")[1]/*, "yyyy-MM-dd_HH-mm"*/);
 
 		settingsFile.close();
 	}
@@ -70,7 +75,7 @@ SettingsHandler::SettingsHandler(QObject* parent)
 
 		QTextStream os{ &databaseFile };
 		os.setCodec("UTF-8");
-		os << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Images>\n</Images>";
+		os << R"(<?xml version="1.0" encoding="UTF-8"?>\n<Images>\n</Images>)";
 
 		databaseFile.close();
 	}
@@ -105,6 +110,11 @@ QDateTime SettingsHandler::lastDownload() const
 int SettingsHandler::gridCellsPerPage() const
 {
 	return m_gridCellsPerPage;
+}
+
+bool SettingsHandler::showOnlyNewImages() const
+{
+	return m_showOnlyNewImages;
 }
 
 // Setters
@@ -147,6 +157,15 @@ void SettingsHandler::set_gridCellsPerPage(int c)
 	}
 }
 
+void SettingsHandler::set_showOnlyNewImages(bool b)
+{
+	if (m_showOnlyNewImages != b)
+	{
+		m_showOnlyNewImages = b;
+		emit showOnlyNewImagesChanged();
+	}
+}
+
 // Methods
 void SettingsHandler::save_settings() const
 {
@@ -160,6 +179,7 @@ void SettingsHandler::save_settings() const
 		os << "height: " + QString::number(m_imagesHeight) + "; ";
 		os << "add logo: " + QString::number(static_cast<int>(m_embedLogo)) + "; ";
 		os << "cells per page: " + QString::number(m_gridCellsPerPage) + "; ";
+		os << "show only new images: " + QString::number(static_cast<int>(m_showOnlyNewImages)) + "; ";
 		os << "lastDownload_ " + m_lastDownload.toString() + ";";
 
 		settingsFile.close();

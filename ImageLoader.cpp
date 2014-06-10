@@ -278,7 +278,7 @@ void ImageLoader::xml_ready(QNetworkReply* xmlReply)
 		{
 			// Embed the market as a query parameter, so the image_ready handler can easily see the market for the image
 			// This query parameter should have no effect on the get request
-			imageUrl = QUrl{ "http://www.bing.com" + reader.readElementText() + "_" + m_settings->resolution() + ".jpg" + "?market=" + mkt };
+			imageUrl = QUrl{ "http://www.bing.com" + reader.readElementText() + "_" + m_settings->resolution() + SettingsHandler::ImageExtension + "?market=" + mkt };
 
 			if (++thingsToRead == 2)
 				break;
@@ -327,7 +327,7 @@ void ImageLoader::image_ready(QNetworkReply* imageReply)
 	QString fileName = SettingsHandler::TempImagesFolder
 					   + mkt + "_"
 					   + QDateTime::currentDateTime().date().toString("yyyy-MM-dd")
-					   + ".jpg";
+					   + SettingsHandler::ImageExtension;
 
 	// Get the image and save it to disk
 	QByteArray bits = imageReply->readAll();
@@ -362,7 +362,9 @@ void ImageLoader::image_ready(QNetworkReply* imageReply)
 			QString md5sum = QString{ QCryptographicHash::hash(bits, QCryptographicHash::Md5).toHex() };
 			(*bingImage)->set_hash(md5sum);
 			(*bingImage)->set_duplicate(std::find(std::begin(m_hashCodes), std::end(m_hashCodes), md5sum) != std::end(m_hashCodes));
-//			qDebug() << "md5sum for market " << mkt << ": " << md5sum << "; is duplicate: " << (*bingImage)->duplicate() << endl;
+
+			if (m_settings->showOnlyNewImages() && (*bingImage)->duplicate())
+				m_todaysImages->remove(*bingImage, true);
 		}
 	}
 
@@ -380,16 +382,17 @@ void ImageLoader::keep_image(int i)
 	BingImage* image = m_todaysImages->get(i);
 
 	QString path = image->filePath();
+	// 20 is the length of any file name (10 characters for the date, 6 for the market, 4 for the extension)
 	QStringRef fileNameNoPath(&path, path.length() - 20, 16);
 	QStringRef currentFolder(&path, 0, path.length() - 20);
 
 	if (currentFolder == SettingsHandler::TempImagesFolder)
 	{
-		QString destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + ".jpg";
+		QString destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + SettingsHandler::ImageExtension;
 
 		int n = 0;
 		while (QFile::exists(destinationPath))
-			destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + "_" + QString::number(n++) + ".jpg";
+			destinationPath = SettingsHandler::ImagesFolder + fileNameNoPath.toString() + "_" + QString::number(n++) + SettingsHandler::ImageExtension;
 
 		if (!QFile::rename(path, destinationPath))
 		{

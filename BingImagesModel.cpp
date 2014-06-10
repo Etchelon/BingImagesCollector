@@ -1,4 +1,5 @@
 #include "BingImagesModel.hpp"
+#include <QSortFilterProxyModel>
 
 QHash<int, QByteArray> BingImagesModel::m_roles;
 
@@ -137,6 +138,26 @@ bool BingImagesModel::remove(int i, bool alsoDelete)
 		return false;
 
 	BingImage* image = m_images.at(i);
+
+	// Delete the image from the filesystem if required
+	if (alsoDelete)
+		image->delete_from_filesystem();
+
+	// Remove the image from the list
+	beginRemoveRows(QModelIndex{ }, i, i);
+	m_images.removeAt(i);
+	endRemoveRows();
+	emit countChanged();
+
+	return true;
+}
+
+bool BingImagesModel::remove(BingImage* image, bool alsoDelete)
+{
+	if (image == nullptr)
+		return false;
+
+	int i = m_images.indexOf(image);
 
 	// Delete the image from the filesystem if required
 	if (alsoDelete)

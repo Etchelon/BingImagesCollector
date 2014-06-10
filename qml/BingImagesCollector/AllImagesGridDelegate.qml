@@ -34,7 +34,7 @@ Flipable {
 				id: fullScreenButton
 				anchors {
 					right: image.right
-					rightMargin: 10
+					rightMargin: 10 + (image.width - image.paintedWidth) / 2
 					top: image.top
 					topMargin: 10 + (image.height - image.paintedHeight) / 2
 				}

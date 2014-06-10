@@ -18,12 +18,10 @@ ApplicationWindow {
 	function setupValues()
 	{
 		// Resolution
-		if (settings.resolution == "1920x1200")
+		if (settings.resolution == "1920x1080")
 			resolutionCbox.currentIndex = 0;
-		else if (settings.resolution == "1920x1080")
-			resolutionCbox.currentIndex = 1;
 		else
-			resolutionCbox.currentIndex = 2;
+			resolutionCbox.currentIndex = 1;
 	}
 
 	ColumnLayout {
@@ -32,7 +30,6 @@ ApplicationWindow {
 		anchors.fill: parent
 		anchors.margins: settingsWindow.defaultSpacing
 		spacing: 10
-		property real cellWidth: col.width / 3 - spacing
 
 		Grid {
 			id: grid
@@ -44,7 +41,7 @@ ApplicationWindow {
 			Text { text: qsTr("Resolution for downloaded images: ") }
 			ComboBox {
 				id: resolutionCbox
-				model: ["1920x1200", "1920x1080", "1366x768"]
+				model: ["1920x1080", "1366x768"]
 			}
 		}
 
@@ -57,30 +54,40 @@ ApplicationWindow {
 			Item { Layout.fillWidth: true }
 			Item {
 				width: parent.width
-				height: embedLogoCbox.implicitHeight > txt.implicitHeight ? embedLogoCbox.implicitHeight : txt.implicitHeight
+				height: embedLogoCbox.implicitHeight + onlyNewImagesCbox.implicitHeight
 
 				CheckBox {
 					id: embedLogoCbox
 
-					anchors.centerIn: parent
+					anchors.top: parent.top
+					anchors.horizontalCenter: parent.horizontalCenter
 
+					checked: settings.embedLogo
 					text: qsTr("Embed Bing logo in images")
-					visible: resolutionCbox.currentIndex != 0
+					visible: true
 
 					Binding {
-						target: embedLogoCbox
-						property: "checked"
-						value: settings.embedLogo
+						target: settings
+						property: "embedLogo"
+						value: embedLogoCbox.checked
 					}
 				}
-				Text {
-					id: txt
 
-					anchors.centerIn: parent
+				CheckBox {
+					id: onlyNewImagesCbox
 
-					text: qsTr("1920x1200 images already have the bing logo embedded")
-					wrapMode: Text.WordWrap
-					visible: resolutionCbox.currentIndex == 0
+					anchors.top: embedLogoCbox.bottom
+					anchors.horizontalCenter: parent.horizontalCenter
+
+					checked: settings.showOnlyNewImages
+					text: qsTr("Show only new images when in the download view")
+					visible: true
+
+					Binding {
+						target: settings
+						property: "showOnlyNewImages"
+						value: onlyNewImagesCbox.checked
+					}
 				}
 			}
 			Item { Layout.fillWidth: true }
