@@ -1,5 +1,5 @@
 import QtQuick 2.2
-
+ 
 Item {
 	width: 8
 	anchors.top: parent.top
