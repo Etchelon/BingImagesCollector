@@ -10,6 +10,7 @@ ApplicationWindow {
 	id: main
 
 	property alias settings: imageLoader.settings
+	visible: true
 
 	ImageLoader {
 		id: imageLoader
